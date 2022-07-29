@@ -2,24 +2,27 @@ require("dotenv").config()
 const Moralis = require("moralis/node")
 const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL
 const appId = process.env.NEXT_PUBLIC_APP_ID
-const masteKey = process.env.masterKey
+const masterKey = process.env.masterKey
 
 const contractAddresses = require("./constants/networkMapping.json")
 
 let chainId = process.env.chainId || 31337
 let moralisChainId = chainId == "31337" ? "1337" : chainId
 
-const contractAddrass = contractAddresses[chainId]["NftMarketplace"][0]
+// const contractAddress = contractAddresses[chainId]["NftMarketplace"][0]
+const contractAddressArray = contractAddresses[chainId]["NftMarketplace"]
+const contractAddress = contractAddressArray[contractAddressArray.length - 1]
 
 async function main() {
-    await Moralis.start({ serverUrl, appId, masteKey })
-    // console.log(`Working with contrat address ${contractAddress}`)
+    await Moralis.start({ serverUrl, appId, masterKey })
+    console.log(`Working with contrat address ${contractAddress}`)
 
     let itemListedOptions = {
         // Moralis understands a local chain is 1337
         chainId: moralisChainId,
         sync_historical: true,
         topic: "ItemListed(address,address,uint256,uint256)",
+        address: contractAddress,
         abi: {
             anonymous: false,
             inputs: [
